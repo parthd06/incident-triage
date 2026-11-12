@@ -21,7 +21,7 @@ If the system crashes midway, it **picks up exactly where it left off** and does
  
 ## How it works
  
-![Architecture of the incident triage multi-agent system](assets/architecture.png)
+![Architecture of the incident triage multi-agent system](Agent_Architecture.png)
  
 Reading the diagram from left to right:
  
@@ -52,7 +52,7 @@ Each agent has **one tool for one job**. That keeps it focused, makes its answer
  
 I also built a **live, read-only status page** where anyone on the team can follow an incident without touching the workflow. It refreshes every 5 seconds.
  
-![Incident Status page showing diagnosis, findings and team approvals](assets/incident-status-page.png)
+![Incident Status page showing diagnosis, findings and team approvals](Incident_page.png)
  
 This screenshot shows a real run on a sample incident, **"checkout-api 5xx rate above 15%"** (customers were getting errors at checkout):
  
@@ -111,48 +111,48 @@ I built this by following NextWork's guided project *Triage Incidents with LangG
 | Cloud | Google Cloud (Vertex AI, Cloud Shell) |
 | Interface | Command-line app + web status page |
  
+
 <details>
 <summary><b>Run it yourself</b></summary>
+
 Requires a Google Cloud project with the Vertex AI API enabled. Built and tested in Google Cloud Shell.
- 
+
 ```bash
 git clone https://github.com/<your-username>/langgraph-multi-agent-incident-triage.git
 cd langgraph-multi-agent-incident-triage
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
- 
+
 # Investigate the sample incident
 python3 app.py start --thread inc-001 --alert INC-2041
- 
+
 # Each team approves or rejects its own fix
 python3 app.py resume --thread inc-001 --team payments --decision approve
 python3 app.py resume --thread inc-001 --team platform-data --decision reject
- 
+
 # Crash-recovery test
 TRIAGE_FAIL=metrics python3 app.py start --thread crash-001 --alert INC-2041
 python3 app.py resume --thread crash-001
- 
+
 # Live status page
 python3 status_page.py
 ```
- 
+
 </details>
+
 <details>
 <summary><b>Project structure</b></summary>
-```
+
+```text
 langgraph-multi-agent-incident-triage/
 ├── app.py              # The LangGraph workflow + command-line app
 ├── specialists.py      # The three specialist agents and their tools
 ├── status_page.py      # Live, read-only Incident Status page
 ├── requirements.txt    # Dependencies
-├── data/               # Sample alerts, logs, deploys and metrics
-├── runbooks/           # Published incident reports
-└── assets/             # Diagram and screenshots
+├── data/               # Sample alerts, logs,
 ```
- 
 </details>
----
- 
+
 ## What's next
  
 - **LangSmith tracing** to replay every agent decision step by step
